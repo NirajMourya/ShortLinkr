@@ -1,9 +1,11 @@
+import axios from "axios";
 import {useState} from "react";
 import toast from "react-hot-toast"; 
 
 function Home()
 {
-    const apiUrl = "https://api.shrtco.de/v2/shorten?url";
+    //const apiUrl = "https://ulvis.net/api.php?url";
+    const apiUrl = "https://v.gd/create.php?format=json&url";
     const [inputURL, setInputURL] = useState("");
     const [originalLink, setOriginalLink] = useState("");
     const [shortenLink, setShortenLink] = useState("");
@@ -13,9 +15,12 @@ function Home()
     {
         try
         {
-        const res = await fetch(`${apiUrl}=${inputURL}`);
+        /*const res = await fetch(`${apiUrl}=${inputURL}`, {
+          mode: 'no-cors'
+        });
         
         const data = await res.json();
+        debugger;
         if (data?.ok) {
              debugger;
              setInputURL("");
@@ -28,10 +33,36 @@ function Home()
                   shortenLink: data?.result?.short_link,
                 },
             ]);
-        }
+        }*/
+          const response = await axios({
+            method: 'post',
+            url:`https://api.tinyurl.com/create`,
+    
+            params:{
+              url: inputURL,
+              api_token:'bxluIyAdmNp0qyXdFeCCTeeATHb5qHfYNP3WyHf5enYOiFFkfp5tkj7QvcLs'
+            }
+          }
+          );
+          if(response?.data?.data?.tiny_url)
+          {
+              debugger;
+            setInputURL("");
+             setOriginalLink(response?.data?.data?.url);
+             setShortenLink(response?.data?.data?.tiny_url);
+             setUrls([
+                ...urls,
+                {
+                  originalLink: response?.data?.data?.url,
+                  shortenLink: response?.data?.data?.tiny_url,
+                },
+            ]);
+          }
+
         }
         catch(err)
         {
+              debugger;
               alert("Some error occured, Please try again.");
         }
     }
